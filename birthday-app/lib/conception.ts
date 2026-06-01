@@ -83,7 +83,7 @@ export function getConceptionContext(conceptionDate: Date, holidays: Holiday[]):
 
   let nearHoliday: string | null = null;
   for (const event of HARDCODED_EVENTS) {
-    if (daysApart(month, day, event.month, event.day) <= 3) {
+    if (daysApart(month, day, event.month, event.day) <= 4) {
       nearHoliday = event.name;
       break;
     }
@@ -95,7 +95,7 @@ export function getConceptionContext(conceptionDate: Date, holidays: Holiday[]):
       const parts = holiday.date.split('-').map(Number);
       const hMonth = parts[1] - 1; // 0-indexed
       const hDay = parts[2];
-      if (daysApart(month, day, hMonth, hDay) <= 3) {
+      if (daysApart(month, day, hMonth, hDay) <= 4) {
         nearPublicHoliday = holiday.name;
         break;
       }

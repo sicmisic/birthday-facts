@@ -7,9 +7,25 @@ type WikiBirth = {
     titles: { normalized: string };
     description?: string;
     thumbnail?: { source: string };
+    extract?: string;
     content_urls?: { desktop?: { page: string } };
   }>;
 };
+
+function rankBirths(births: WikiBirth[]): WikiBirth[] {
+  return births
+    .filter((b) => b.pages?.[0]?.thumbnail?.source) // no photo = not famous enough
+    .map((b) => ({
+      ...b,
+      _score:
+        (b.pages?.[0]?.thumbnail ? 10 : 0) +
+        (b.pages?.[0]?.description ? 5 : 0) +
+        ((b.pages?.[0]?.extract?.length ?? 0) / 100) +
+        (b.year && b.year > 1900 ? 2 : 0),
+    }))
+    .sort((a, b) => (b as typeof b & { _score: number })._score - (a as typeof a & { _score: number })._score)
+    .slice(0, 12);
+}
 
 type WikiEvent = {
   year: number;
@@ -35,16 +51,14 @@ export async function fetchBirths(month: string, day: string): Promise<Celebrity
     if (!res.ok) return [];
     const data = await res.json();
     const births: WikiBirth[] = data.births || [];
+    const ranked = rankBirths(births);
 
-    return births
-      .filter((b) => b.pages && b.pages.length > 0)
-      .map((b) => ({
-        name: b.pages[0].titles.normalized,
-        description: b.pages[0].description || b.text,
-        year: b.year,
-        thumbnail: b.pages[0].thumbnail?.source,
-      }))
-      .slice(0, 12);
+    return ranked.map((b) => ({
+      name: b.pages[0].titles.normalized,
+      description: b.pages[0].description || b.text,
+      year: b.year,
+      thumbnail: b.pages[0].thumbnail?.source,
+    }));
   } catch {
     return [];
   }

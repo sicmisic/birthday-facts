@@ -66,8 +66,30 @@ export default async function BirthdayPage({ params, searchParams }: Props) {
   ]);
 
   const conceptionDate = getConceptionDate(birthday);
-  const holidays = await fetchHolidays(conceptionDate.getFullYear(), country);
+  const conceptionMonth = String(conceptionDate.getMonth() + 1).padStart(2, '0');
+  const conceptionDay = String(conceptionDate.getDate()).padStart(2, '0');
+
+  const [holidays, rawConceptionEvents] = await Promise.all([
+    fetchHolidays(conceptionDate.getFullYear(), country),
+    fetchEvents(conceptionMonth, conceptionDay),
+  ]);
   const conception = getConceptionContext(conceptionDate, holidays);
+
+  // Build event-based kicker (year > 1900 only, most recent first for specificity)
+  const goodConceptionEvents = rawConceptionEvents
+    .filter((e) => e.year > 1900)
+    .sort((a, b) => b.year - a.year)
+    .slice(0, 1);
+
+  let conceptionKicker: string | undefined;
+  if (goodConceptionEvents.length > 0) {
+    const e = goodConceptionEvents[0];
+    const text = e.text.replace(/\.$/, '');
+    conceptionKicker =
+      text.length < 90
+        ? `Meanwhile, in ${e.year}: ${text}. The world had no idea what else was about to happen.`
+        : `While your parents were busy, the world was dealing with ${text.charAt(0).toLowerCase() + text.slice(1)} (${e.year}).`;
+  }
 
   const zodiac = getZodiacSign(birthday);
   const moonPhase = getMoonPhase(birthday);
@@ -227,7 +249,7 @@ export default async function BirthdayPage({ params, searchParams }: Props) {
 
         {/* ── CONCEPTION ── */}
         <section className="mb-16">
-          <ConceptionStory conception={conception} />
+          <ConceptionStory conception={conception} conceptionKicker={conceptionKicker} />
         </section>
 
         <div className="section-divider mb-16" />

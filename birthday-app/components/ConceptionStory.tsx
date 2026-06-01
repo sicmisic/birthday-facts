@@ -3,6 +3,7 @@ import { SectionHeading } from './SectionHeading';
 
 interface Props {
   conception: ConceptionContext;
+  conceptionKicker?: string;
 }
 
 const SEASON_ICON: Record<string, string> = {
@@ -14,9 +15,17 @@ const SEASON_ICON: Record<string, string> = {
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export function ConceptionStory({ conception }: Props) {
+export function ConceptionStory({ conception, conceptionKicker }: Props) {
   const seasonIcon = SEASON_ICON[conception.season];
   const dayName = DAY_NAMES[conception.dayOfWeek];
+
+  // Layer 1 intro: "You were likely conceived around Wednesday, September 23"
+  const cDate = new Date(conception.conceptionDate);
+  const introDate = cDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <section>
@@ -26,9 +35,9 @@ export function ConceptionStory({ conception }: Props) {
         ornament="🌙"
       />
 
-      {/* Main quote */}
+      {/* Main story card — three layers */}
       <div
-        className="rounded-2xl p-6 md:p-8 mb-6 relative overflow-hidden"
+        className="rounded-2xl p-6 md:p-8 mb-6 relative overflow-hidden flex flex-col gap-5"
         style={{
           background:
             'linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(100,80,20,0.05) 100%)',
@@ -37,19 +46,47 @@ export function ConceptionStory({ conception }: Props) {
       >
         {/* Decorative quote mark */}
         <div
-          className="absolute top-4 left-6 text-6xl leading-none select-none"
-          style={{ color: 'rgba(212,175,55,0.15)', fontFamily: 'var(--font-display)' }}
+          className="absolute top-4 left-6 text-6xl leading-none select-none pointer-events-none"
+          style={{ color: 'rgba(212,175,55,0.12)', fontFamily: 'var(--font-display)' }}
           aria-hidden
         >
           "
         </div>
 
+        {/* Layer 1: Intro */}
+        <p
+          className="text-sm pl-4"
+          style={{ color: 'var(--cosmic-muted)', fontFamily: 'var(--font-body)' }}
+        >
+          You were likely conceived around{' '}
+          <span style={{ color: 'var(--cosmic-gold-light)' }}>{introDate}</span>.
+        </p>
+
+        {/* Layer 2: Holiday / weekend line */}
         <p
           className="relative text-lg md:text-xl leading-relaxed font-medium italic pl-4"
           style={{ color: 'var(--cosmic-text)', fontFamily: 'var(--font-display)' }}
         >
           {conception.funMessage}
         </p>
+
+        {/* Layer 3: Historical event kicker (the punchline) */}
+        {conceptionKicker && (
+          <>
+            <div
+              className="h-px"
+              style={{
+                background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.25), transparent)',
+              }}
+            />
+            <p
+              className="text-sm leading-relaxed pl-4"
+              style={{ color: 'var(--cosmic-text)', fontFamily: 'var(--font-body)', opacity: 0.85 }}
+            >
+              {conceptionKicker}
+            </p>
+          </>
+        )}
       </div>
 
       {/* Details grid */}
