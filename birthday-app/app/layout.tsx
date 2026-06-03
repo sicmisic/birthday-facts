@@ -110,6 +110,10 @@ export default function RootLayout({
             type="application/ld+json"
             dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}}
         />
+        <script async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8786228898244008"
+                crossOrigin="anonymous">
+        </script>
       </head>
       <body className="min-h-full flex flex-col">
       {children}
