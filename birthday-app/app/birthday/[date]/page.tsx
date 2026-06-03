@@ -20,6 +20,8 @@ import { ZodiacCard } from '@/components/ZodiacCard';
 import { MoonPhaseCard } from '@/components/MoonPhaseCard';
 import { ShareButton } from '@/components/ShareButton';
 
+const SITE_URL = 'https://birthday-facts.vercel.app';
+
 type Props = {
   params: Promise<{ date: string }>;
   searchParams: Promise<{ country?: string }>;
@@ -38,13 +40,46 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     timeZone: 'UTC',
   });
 
+  const monthDay = birthday.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+
+  const year = birthday.getUTCFullYear();
+  const zodiac = getZodiacSign(birthday);
+  const canonicalUrl = `${SITE_URL}/birthday/${date}`;
+
   return {
-    title: `Birthday Facts for ${formattedDate}`,
-    description: `Celebrities, history, and the truth about how you came to be on ${formattedDate}.`,
+    title: `${monthDay} Birthday Facts — Celebrities, History & ${zodiac.name} Profile (${year})`,
+    description: `Who was born on ${monthDay}? Discover famous celebrities, what happened in history, your ${zodiac.name} zodiac traits, moon phase, and the story of your conception. Everything your birthday says about you — in one dossier.`,
+    keywords: [
+      `celebrities born on ${monthDay}`,
+      `what happened on ${monthDay}`,
+      `${monthDay} birthday facts`,
+      `born ${formattedDate}`,
+      `${monthDay} in history`,
+      `${zodiac.name} birthday ${year}`,
+      `famous people born ${monthDay}`,
+      `who shares my birthday ${monthDay}`,
+      `was I an accident born ${monthDay} ${year}`,
+      `when was I conceived if born ${monthDay}`,
+      `birthday meaning ${monthDay}`,
+    ],
     openGraph: {
-      title: `Birthday Facts for ${formattedDate}`,
-      description: `Find out who shares your birthday, what happened in history, your moon phase, and more!`,
+      title: `${monthDay} Birthday Facts — Celebrities, History & Cosmic Profile`,
+      description: `Famous people born on ${monthDay}, historical events, ${zodiac.name} zodiac sign, moon phase, and more. What does your ${year} birthday really say about you?`,
       type: 'website',
+      url: canonicalUrl,
+      siteName: 'Birthday Facts',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${monthDay} Birthday Facts — Celebrities, History & Zodiac`,
+      description: `Born ${formattedDate}? See who shares your birthday, what history was doing, and whether you were an accident.`,
+    },
+    alternates: {
+      canonical: canonicalUrl,
     },
   };
 }
@@ -135,9 +170,50 @@ export default async function BirthdayPage({ params, searchParams }: Props) {
     timeZone: 'UTC',
   });
   const yearStr = birthday.getUTCFullYear().toString();
+  const canonicalUrl = `${SITE_URL}/birthday/${date}`;
+
+  const pageSchema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebPage',
+        '@id': canonicalUrl,
+        url: canonicalUrl,
+        name: `${monthDay} Birthday Facts — Celebrities, History & ${zodiac.name} Profile (${yearStr})`,
+        description: `Famous people born on ${monthDay}, historical events, ${zodiac.name} zodiac sign, moon phase, and the story of how you came to be in ${yearStr}.`,
+        isPartOf: {
+          '@type': 'WebSite',
+          '@id': SITE_URL,
+          name: 'Birthday Facts',
+          url: SITE_URL,
+        },
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: SITE_URL,
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: `${monthDay} Birthday Facts`,
+              item: canonicalUrl,
+            },
+          ],
+        },
+      },
+    ],
+  };
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+      />
       <StarField />
       <ConfettiEffect />
 
