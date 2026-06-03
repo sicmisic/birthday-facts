@@ -1,5 +1,6 @@
 import { BirthdayForm } from '@/components/BirthdayForm';
 import { StarField } from '@/components/StarField';
+import AdUnit from "@/components/AdUnit";
 
 const TEASERS = [
   {
@@ -187,6 +188,10 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <div className="section-divider mb-16" />
+        <AdUnit slot="1234567890" />
+        <div className="section-divider mb-16" />
 
         {/* FAQ section */}
         <section
