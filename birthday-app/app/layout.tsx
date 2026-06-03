@@ -99,20 +99,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${playfairDisplay.variable} ${lora.variable} dark h-full`}
-    >
+
+      <html
+          lang="en"
+          className={`${playfairDisplay.variable} ${lora.variable} dark h-full`}
+      >
       <head>
+        <meta name="google-adsense-account" content="ca-pub-8786228898244008"/>
         <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}}
         />
       </head>
       <body className="min-h-full flex flex-col">
-        {children}
-        <Analytics />
+      {children}
+      <Analytics/>
       </body>
-    </html>
+      </html>
   );
 }
