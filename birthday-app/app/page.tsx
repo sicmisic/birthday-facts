@@ -188,9 +188,6 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="section-divider mb-16" />
-        <div className="section-divider mb-16" />
-
         {/* FAQ section */}
         <section
           className="relative z-10 px-4 pb-28 max-w-3xl mx-auto w-full"
